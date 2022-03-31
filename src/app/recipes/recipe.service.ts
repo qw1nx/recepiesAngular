@@ -1,15 +1,38 @@
 import {Recipe} from "./recipe.model";
-import {EventEmitter} from "@angular/core";
+import {EventEmitter, Injectable} from "@angular/core";
+import {Ingredient} from "../shared/ingredient.model";
+import {ShoppingListService} from "../shopping-list/shopping-list.service";
 
+@Injectable()
 export class RecipeService{
   recipeSelected = new EventEmitter<Recipe>();
 
+  constructor(private slService: ShoppingListService) {
+  }
+
   private recipes:Recipe[] = [
-    new Recipe('Soup', 'Very tasty', 'https://www.inspiredtaste.net/wp-content/uploads/2018/09/Easy-Chicken-Noodle-Soup-Recipe-1200.jpg'),
-    new Recipe('Sth Else for test', 'Very tasty', 'https://www.inspiredtaste.net/wp-content/uploads/2018/09/Easy-Chicken-Noodle-Soup-Recipe-1200.jpg')
+    new Recipe('schnitzel',
+      'A schnitzel is great.',
+      'https://www.thespruceeats.com/thmb/cckc3_4QUQ79kSFhcLPM8xg9F3g=/3797x2848/smart/filters:no_upscale()/wiener-schnitzel-recipe-1447089-Hero-5b587d6c46e0fb0071b0059d.jpg',
+      [
+        new Ingredient('Meat', 1),
+        new Ingredient('French Fries', 20)
+      ]),
+    new Recipe('Spaghetti Bolognese',
+      'Our best ever spaghetti bolognese.',
+      'https://www.kitchensanctuary.com/wp-content/uploads/2019/09/Spaghetti-Bolognese-square-FS-0204.jpg',
+    [
+      new Ingredient('Spaghetti', 100),
+      new Ingredient('Meat', 1),
+      new Ingredient('Tomato Sauce', 1)
+    ])
   ];
 
   getRecipes(){
     return this.recipes.slice();
+  }
+
+  addIngrToListFromRecipe(recipe: Recipe){
+    this.slService.addArrIngredients(recipe.ingredients);
   }
 }
