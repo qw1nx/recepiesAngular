@@ -12,6 +12,7 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   ingredients:Ingredient[];
   private igChengeSubscr: Subscription;
 
+
   constructor( private slService: ShoppingListService ) { }
 
   ngOnInit(): void {
@@ -23,5 +24,9 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     this.igChengeSubscr.unsubscribe();
+  }
+
+  onEditItem(id: number){
+    this.slService.startedEditing.next(id);
   }
 }
