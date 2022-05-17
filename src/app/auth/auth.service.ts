@@ -48,55 +48,64 @@ export class AuthService{
     }));
   }
 
-  logout(){
+  logout() {
     this.user.next(null);
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
-    if (this.tokenExpirationTimer){
+    if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
     this.tokenExpirationTimer = null;
   }
 
-  autoLogout(expirationDuration: number){
+  autoLogout(expirationDuration: number) {
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
-    },expirationDuration)
+    }, expirationDuration);
   }
 
-  autoLogin(){
+  autoLogin() {
     const userData: {
       email: string;
       id: string;
       _token: string;
       _tokenExpirationDate: string;
     } = JSON.parse(localStorage.getItem('userData'));
-    if (!userData){
+    if (!userData) {
       return;
     }
+
     const loadedUser = new UserModel(
       userData.email,
       userData.id,
       userData._token,
-      new Date(userData._tokenExpirationDate));
+      new Date(userData._tokenExpirationDate)
+    );
 
-    if (loadedUser.token){
+    if (loadedUser.token != null) {
+      console.log('USER HAS TOKEN')
       this.user.next(loadedUser);
-      const expiration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-      this.autoLogout(expiration);
+      const expirationDuration =
+        new Date(userData._tokenExpirationDate).getTime() -
+        new Date().getTime();
+      this.autoLogout(expirationDuration);
     }
   }
 
-  private handleAuthentication(email: string, localId: string, token: string, expiresIn: number){
-      const expirationDate = new Date(new Date().getTime() + expiresIn);
-      const user = new UserModel(email, localId, token, expirationDate)
-      this.user.next(user);
-      this.autoLogout(expiresIn * 1000);
-      localStorage.setItem('userData', JSON.stringify(user))
-      }
+  private handleAuthentication(
+    email: string,
+    userId: string,
+    token: string,
+    expiresIn: number
+  ) {
+    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+    const user = new UserModel(email, userId, token, expirationDate);
+    this.user.next(user);
+    this.autoLogout(expiresIn * 1000);
+    localStorage.setItem('userData', JSON.stringify(user));
+  }
 
   private handleError(errorRes: HttpErrorResponse){
-    //console.log(errorRes);
     let errorMessage = 'An unknown error';
     if (!errorRes.error || !errorRes.error.error){
       return throwError(errorMessage);
@@ -106,10 +115,6 @@ export class AuthService{
         errorMessage = 'This email exists already';
        case "EMAIL_NOT_FOUND":
          errorMessage= 'There is no user record corresponding to this identifier. The user may have been deleted.'
-       //case "INVALID_PASSWORD":
-        //errorMessage = 'The password is invalid or the user does not have a password.';
-      // case "USER_DISABLED":
-      //   errorMessage = 'The user account has been disabled by an administrator.';
     }
     return throwError(errorMessage);
   }
