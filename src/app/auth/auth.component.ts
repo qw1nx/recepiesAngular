@@ -22,6 +22,8 @@ export class AuthComponent implements OnInit {
     this.isLoginMode = !this.isLoginMode;
   }
 
+
+
   onSubmit(form: NgForm) {
     if (!form.valid) {
       return;
@@ -53,6 +55,10 @@ export class AuthComponent implements OnInit {
     );
 
     form.reset();
+  }
+
+  onHandleError(){
+    this.err = null;
   }
 
 }
