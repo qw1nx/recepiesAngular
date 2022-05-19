@@ -7,10 +7,7 @@ export class ShoppingListService{
   ingredientsChanged = new Subject<Ingredient[]>();
   startedEditing = new Subject<number>();
 
-   private ingredients:Ingredient[] = [
-    new Ingredient('Apples', 3),
-    new Ingredient('Carrots', 5)
-  ];
+   private ingredients:Ingredient[] = [];
 
   getIngredients(){
     return this.ingredients.slice();
@@ -36,9 +33,6 @@ export class ShoppingListService{
   }
 
   addArrIngredients(ingredients: Ingredient[]){
-    // for(let ingr of ingredients)  {
-    //   this.ingredients.push(ingr);
-    // }
     this.ingredients.push(...ingredients);
     this.ingredientsChanged.next(this.ingredients.slice());
   }
